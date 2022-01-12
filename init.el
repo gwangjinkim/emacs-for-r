@@ -1,34 +1,59 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; prepare and initialize packages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'package)
 (setq package-enable-at-startup nil)
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
 			 ("elpa"  . "http://elpa.gnu.org/packages/")
 			 ("marmalade" . "http://marmalade-repo.org/packages/")))
-
 (package-initialize)
 (package-refresh-contents) ;; M-x package-refresh contents
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bootstrap `use-package`
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun install-if-not-installed (package-name)
+  (unless (package-installed-p package-name)
+    (package-refresh-contents)
+    (package-install package-name)))
+    
+(install-if-no-installed 'use-package)
+
+
 
 (setq inhibit-startup-message t)
 (tool-bar-mode -1)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; try
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package try
   :ensure t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; which-key
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package which-key
   :ensure t
   :config (which-key-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ibuffer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; ibuffer - make it default 
 ;; make ibuffer default open in another window
 (defalias 'list-buffers 'ibuffer)
 (defalias 'list-buffers 'ibuffer-other-window)
 
-;; tabbars
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; tabbar
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package tabbar
   :ensure t
   :config (tabbar-mode 1))
@@ -39,7 +64,10 @@
 ;; winner mode - move via C-c left-right-arrow
 (winner-mode 1)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ace-window C-x o
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package ace-window
   :ensure t
   :init (progn
@@ -48,11 +76,17 @@
            '(aw-leading-char-face
              ((t (:inherit ace-jump-face-foreground :height 3.0)))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; counsel
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package counsel
   :ensure t)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; swiper for better searches
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package swiper
   :ensure try
   :config
@@ -77,10 +111,19 @@
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
 ;; if using swiper, comment out ido
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; navigation with avy
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package avy
   :ensure t
   :bind ("M-s" . avy-goto-char))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; auto-complete
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; ;; auto-complete
 ;; (use-package auto-complete
@@ -92,7 +135,10 @@
 ;; ;; add (define-key ac-completing-map (kbd "M-h") 'ac-quick-help)
 
 
-;; as autocomplete we use company
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; company for autocompletion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package company
   :ensure t
   :init
@@ -101,11 +147,23 @@
   (global-company-mode))
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org stuff
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org-bullets
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package org-bullets
   :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org languages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (org-babel-do-load-languages
   'org-babel-load-languages
@@ -113,26 +171,42 @@
     (R . t)
     (lisp . t)
     (clojure . t)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; stop emacs asking for confirmation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (setq org-confirm-babel-evaluate nil)
 
 ;; use `:result pp` to get value and output
 ;; in one go and functioning correct.
 ;; value e.g. didn't work - no newline between results!
 
-(use-package ox-reveal
-  :ensure ox-reveal)
 
-(setq org-reveal-roog "https://cdn.jsdelivr.net/npm/reval.js")
-(setq org-reveal-mathjax t)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org ox-reveal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package ox-reveal
+  :ensure t
+  :config
+  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reval.js")
+  (setq org-reveal-mathjax t))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; htmlize
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package htmlize
   :ensure t)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; function to wrap blocks of text in org templates                       ;;
 ;; e.g. latex or src etc                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun org-begin-template ()
   "Make a template at point."
   (interactive)
@@ -176,7 +250,10 @@
 (define-key org-mode-map (kbd "C-<") 'org-begin-template)
 
 
-;; add conda
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; conda
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package conda
   :ensure t
   :init
@@ -217,9 +294,13 @@
 
 ;; for conda use still `M-x pyvenv-activateRET path-to-conda-env`
 
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  settings for R
+;;  ess for R
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package ess
   :ensure t
   :hook 
@@ -260,11 +341,14 @@
   (setq ess-use-company t)
   ;; (setq ess-use-auto-complete t)
 
+  
   ;; tab completion in R script files
   ;; https://emacs.stackexchange.com/questions/14785/auto-complete-file-path-on-ess-r-mode
   ;; https://stat.ethz.ch/pipermail/ess-help/2013-March/008719.html
   ;; it requires auto-complete package initialization
-  (setq ess-tab-complete-in-script t)
+  ;; (setq ess-tab-complete-in-script t)
+
+  (setq ess-use-auto-complete t)
   
   ;; r-mode or ess-mode for files ending with
   (add-to-list 'auto-mode-alist '("\\.R\\'" . r-mode)))
