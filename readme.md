@@ -24,7 +24,7 @@ After that, create a conda environment for R
 ```
 conda create --name r
 conda activate r
-conda install -c conda-forge r-base r-essentials
+conda install -c r r-base r-essentials
 ```
 
 
