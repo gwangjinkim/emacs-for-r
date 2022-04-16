@@ -119,7 +119,7 @@
 ;; navigation with avy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package 
+(use-package avy
   :ensure t
   :bind ("M-s" . avy-goto-char))
 
@@ -287,7 +287,8 @@
   (setq ess-use-eldoc nil)
   
   ;; use company for autocomplete
-  (ess-toggle-underscore nil)
+  ;; (ess-toggle-underscore nil)
+  (setq ess-smart-S-assign nil)
 
   (setq ess-use-company t)
   ;; (setq ess-use-auto-complete t)
