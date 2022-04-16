@@ -3,9 +3,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'package)
 (setq package-enable-at-startup nil)
-(setq package-archives '(("melpa" . "http://melpa.org/packages/")
-			 ("elpa"  . "http://elpa.gnu.org/packages/")
-			 ("marmalade" . "http://marmalade-repo.org/packages/")))
+;; (setq package-archives '(("melpa" . "http://melpa.org/packages/")
+;; 			 ("elpa"  . "http://elpa.gnu.org/packages/")
+;; 			 ("marmalade" . "http://marmalade-repo.org/packages/")))
+(setq package-archives '(("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 (package-refresh-contents) ;; M-x package-refresh contents
 
@@ -118,7 +119,7 @@
 ;; navigation with avy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package avy
+(use-package 
   :ensure t
   :bind ("M-s" . avy-goto-char))
 
@@ -302,7 +303,7 @@
   
   ;; r-mode or ess-mode for files ending with
   (add-to-list 'auto-mode-alist '("\\.R\\'" . r-mode))
-  (add-to-list 'auto-mode-alist '("\\.r\\'" . r-mode))
+  (add-to-list 'auto-mode-alist '("\\.r\\'" . r-mode)))
   
 
 ;; | Switch to buffer runnng R    | C-c C-z          |
