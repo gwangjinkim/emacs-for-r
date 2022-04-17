@@ -328,6 +328,83 @@
 
 ;; C-h v exec-path ;; to give R path
 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RMarkdown support
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://plantarum.ca/2021/10/03/emacs-tutorial-rmarkdown/
+
+;; ;; necesary:
+;; install.packages("rmarkdown")
+;; install.packages("bookdown")
+
+;; markdown mode
+;; ess
+;; poly-R (polymode) ;; supports .Rnw format - LaTeX with R code
+
+
+(use-package markdown-mode
+  :ensure t)
+
+(use-package poly-R
+  :ensure t
+  :config
+  ;; associate new polymode to Rmd files
+  (add-to-list 'auto-mode-alist '("\\.[rR]md\\'" . poly-gfm+r-mode))
+  ;; use braces around code block language strings:
+  (setq markdown-code-block-braces t)
+  ;; set asymetric header `M-x customize-variable mardkdown-asymmetric-header`
+  (setq markdwon-asymettric-header t))
+
+
+;; RMarkdown
+
+;; | insert heading at same level like previous  | C-c C-s h            |
+;; | insert heading at the specified level       | C-c C-s {1-9}        |
+;; | move headings and their content up down     | C-c <up>/<down>      |
+;; | promote or demote a heading                 | C-c <left>/<right>   |
+;; | insert level1 === or level2 header          | C-c C-s !/@          |  
+
+;; | move to previous/next heading               | C-c C-p/n            |
+;; | move forward/backward to same-level heading | C-c C-f/b            |
+;; | move up to parent heading                   | C-c C-u              |                                              
+
+;; | toggle levels of heading visibility         | <TAB> multiple       |
+
+;; | insert link (url, then link text)           | C-c C-l              |
+
+;; | open link from emacs                        | C-c C-o              |
+;; | insert images (url/local path, then text)   | C-c <TAB> or C-c C-i |
+;; | image text: ![Caption](url)                 |                      |
+;; | toggle display image in buffer              | C-c C-x C-i          |
+
+
+;; | inser table                                 | C-c C-s t nrow ncol  |
+;; | cursor next cell                            | <TAB> or Shift-TAB   |
+
+;; in gfm-mode
+;; | markdown-insert-gfm-code-block or ```       | C-c C-s C            |
+
+;; inside code block, it will be in ESS[R] mode!
+
+;; | move to next R code chunk                   | M-n C-p/n            | polymode-next/previous-chunk                        |
+;; | move to next code chunk fo same type        | M-n M-C-p/n          | polymode-next/previous-chunk-same-type              |
+;; | kill the current chunk                      | M-n M-k              | polymode-kill-chunk                                 |
+;; | narrow buffer only current chunk            | M-n C-t              | polymode-toggle-chunk-narrowing                     |
+
+;; | evaluate code chunks at point/region        | M-n v                | polymode-eval-region-or-chunk                       |
+;; | evaluate all code chunks in buffer          | M-n b                | polymode-eval-buffer                                |
+;; | evaluate to point or to end                 | M-n u/d <up>/<down>  | polymode-eval-buffer-from-beg-to-point/point-to-end |
+
+;; | export markdown                             | M-n e                | polymode-export                                     |
+;; | switch output format                        | C-u M-n e            |                                                     |
+;; markdown and markdown-ess - later remains active - you can check values etc.
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; reconstitute $HOME
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
