@@ -401,9 +401,12 @@
 
 ;; | export markdown                             | M-n e                | polymode-export                                     |
 ;; | switch output format                        | C-u M-n e            |                                                     |
+
+;; | export using weaver                         | M-n w                |                                                     |e
 ;; markdown and markdown-ess - later remains active - you can check values etc.
 
-
+;; for in-line plots
+;; use org-mode instead!
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; reconstitute $HOME
