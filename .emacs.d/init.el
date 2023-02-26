@@ -6,7 +6,8 @@
 ;; (setq package-archives '(("melpa" . "http://melpa.org/packages/")
 ;; 			 ("elpa"  . "http://elpa.gnu.org/packages/")
 ;; 			 ("marmalade" . "http://marmalade-repo.org/packages/")))
-(setq package-archives '(("melpa" . "http://melpa.org/packages/")))
+(setq package-archives '(("elpa"  . "http://elpa.gnu.org/packages/")
+			 ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 (package-refresh-contents) ;; M-x package-refresh contents
 
@@ -205,48 +206,71 @@
 ;; conda
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; giving up on the conda package of emacs - it should be easier to use
+;; like:
+;; one should just set in one place the directory to either miniconda or anaconda
+;; and that should be it! everything else should be inferred automatically by the package.
+;; this is definitely not the case with this current package.
+
 (use-package conda
   :ensure t
-  :init
-  (setq conda-anaconda-home (expand-file-name "~/miniconda3"))
-  (setq conda-env-home-directory (expand-file-name "~/miniconda3"))
   :config
+  ;; set the conda's home
+  (setq conda-anaconda-home (concat (getenv "CONDA_PREFIX_1") "/"))
+  (setq conda-env-home (concat (getenv "CONDA_PREFIX_1") "/"))
+  (setq conda-env-home-directory (concat (getenv "CONDA_PREFIX_1") "/"))
+  ;; it is important to not to use `expand-file-name` here
+  ;; but rather use absolute environment variables
+  ;; creates otherwise a lot of headache
 
-  ;; get current env from CONDA_DEFAULT_ENV
-  ;; (conda-env-activate (getenv "CONDA_DEFAULT_ENV")) ;; it returns string
+  ;; activate current environment
+  ;; the pitfall however is that "base" is not listed!
+  (let ((current-environment (getenv "CONDA_DEFAULT_ENV")))
+    (unless (string-equal-ignore-case "base" current-environment)
+      (conda-env-activate current-environment)))
+  ;; still not working!
 
-  ;; ;; interactive shell support:
-  ;; (conda-env-initialize-interactive-shells)
-  ;; (conda-env-initialize-eshell)
+  ;; support interactive shells
+  (conda-env-initialize-interactive-shells)
+  (conda-env-initialize-eshell)
 
-  (conda-env-autoactivate-mode t)) ;; it requires elpa
+  ;; autoactivate-mode requires elpa! (see above!)
+  (conda-env-autoactivate-mode t))
 
-  ;;  (setq-default mode-line-format (cons mode-line-format '(:exec conda-env-current-name)))
-  ;; :hook
-  ;; (find-file-hook . (lambda () (when (bound-and-true-p conda-project-env-path)
-  ;; 				 (conda-env-activate-for-buffer))))
+;;   ;;  (setq-default mode-line-format (cons mode-line-format '(:exec conda-env-current-name)))
+;;   ;; :hook
+;;   ;; (find-file-hook . (lambda () (when (bound-and-true-p conda-project-env-path)
+;;   ;; 				 (conda-env-activate-for-buffer))))
 
-  ;; the problem was that 
+;;   ;; the problem was that 
 
-;; for conda use `M-x conda-env-activate <env>` and `M-x conda-env-deactivate` and `M-x conda-env-list`
+;; ;; for conda use `M-x conda-env-activate <env>` and `M-x conda-env-deactivate` and `M-x conda-env-list`
 
 
-;; by that we can avoid to have to use elpy and pyvenv
+;; ;; by that we can avoid to have to use elpy and pyvenv
 
-;; (use-package elpy
+;; ;; (use-package elpy
+;; ;;   :ensure t
+;; ;;   :config
+;; ;;   (elpy-enable))
+
+;; ;; (use-package yasnippet
+;; ;;   :ensure t
+;; ;;   :t
+;; ;;   (yas-global-mode 1))
+
+;; ;; for conda use still `M-x pyvenv-activateRET path-to-conda-env`
+
+
+;; (use-package pyvenv
 ;;   :ensure t
+;;   :hook (python-mode . pyvenv-mode)
 ;;   :config
-;;   (elpy-enable))
-
-;; (use-package yasnippet
-;;   :ensure t
-;;   :init
-;;   (yas-global-mode 1))
-
-;; for conda use still `M-x pyvenv-activateRET path-to-conda-env`
-
-
-
+;;   (setenv "WORKON_HOME" (expand-file-name "~/miniconda3/"))
+;;   (pyvenv-mode 1)
+;;   (setq pyvenv-activate (expand-file-name "~/miniconda3/bin/activate"))
+;;   ;; activate currently active conda env
+;;   (setq pyvenv-workon (getenv "CONDA_DEFAULT_ENV")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  ess for R
@@ -408,12 +432,86 @@
 ;; for in-line plots
 ;; use org-mode instead!
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; reconstitute $HOME
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; alias remacs="conda activate emacs && env ORIG_HOME=$HOME HOME=/emacs/emacs-for-r PATH=$HOME/miniconda3/envs/r/bin:$PATH emacs &"
 
-(setenv "HOME" (getenv "ORIG_HOME"))
+
+;; copy-pasted from emacs-for-clojure customaizations/ui.el
+
+;; Don't show native OS scroll bars for buffers because they're redundant
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+
+;; Color Themes
+;; Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
+;; for a great explanation of emacs color themes.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
+;; for a more technical explanation.
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'load-path "~/.emacs.d/themes")
+(load-theme 'tomorrow-night-bright t)
+
+;; increase font size for better readability
+(set-face-attribute 'default nil :height 140)
+
+
+
+;; Don't show native OS scroll bars for buffers because they're redundant
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+
+;; Color Themes
+;; Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
+;; for a great explanation of emacs color themes.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
+;; for a more technical explanation.
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'load-path "~/.emacs.d/themes")
+(load-theme 'tomorrow-night-bright t)
+
+;; increase font size for better readability
+(set-face-attribute 'default nil :height 140)
+
+
+
+;; Uncomment the lines below by removing semicolons and play with the
+;; values in order to set the width (in characters wide) and height
+;; (in lines high) Emacs will have whenever you start it
+;; (setq initial-frame-alist '((top . 0) (left . 0) (width . 177) (height . 53)))
+
+;; These settings relate to how emacs interacts with your operating system
+(setq ;; makes killing/yanking interact with the clipboard
+      x-select-enable-clipboard t
+
+      ;; I'm actually not sure what this does but it's recommended?
+      x-select-enable-primary t
+
+      ;; Save clipboard strings into kill ring before replacing them.
+      ;; When one selects something in another program to paste it into Emacs,
+      ;; but kills something in Emacs before actually pasting it,
+      ;; this selection is gone unless this variable is non-nil
+      save-interprogram-paste-before-kill t
+
+      ;; Shows all options when running apropos. For more info,
+      ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html
+      apropos-do-all t
+
+      ;; Mouse yank commands yank at point instead of at click.
+      mouse-yank-at-point t)
+
+
+;; No cursor blinking, it's distracting
+(blink-cursor-mode 0)
+
+;; full path in title bar
+(setq-default frame-title-format "%b (%f)")
+
+;; don't pop up font menu
+(global-set-key (kbd "s-t") '(lambda () (interactive)))
+
+;; no bell
+(setq ring-bell-function 'ignore)
+
+
+
 
 
 (custom-set-variables
@@ -422,8 +520,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (ess slime which-key use-package try tabbar ox-reveal org-bullets htmlize counsel conda company ace-window))))
+   '(pyvenv ess slime which-key use-package try tabbar ox-reveal org-bullets htmlize counsel conda company ace-window)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
