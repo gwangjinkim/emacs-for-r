@@ -206,12 +206,6 @@
 ;; conda
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; giving up on the conda package of emacs - it should be easier to use
-;; like:
-;; one should just set in one place the directory to either miniconda or anaconda
-;; and that should be it! everything else should be inferred automatically by the package.
-;; this is definitely not the case with this current package.
-
 (use-package conda
   :ensure t
   :config
@@ -236,41 +230,6 @@
 
   ;; autoactivate-mode requires elpa! (see above!)
   (conda-env-autoactivate-mode t))
-
-;;   ;;  (setq-default mode-line-format (cons mode-line-format '(:exec conda-env-current-name)))
-;;   ;; :hook
-;;   ;; (find-file-hook . (lambda () (when (bound-and-true-p conda-project-env-path)
-;;   ;; 				 (conda-env-activate-for-buffer))))
-
-;;   ;; the problem was that 
-
-;; ;; for conda use `M-x conda-env-activate <env>` and `M-x conda-env-deactivate` and `M-x conda-env-list`
-
-
-;; ;; by that we can avoid to have to use elpy and pyvenv
-
-;; ;; (use-package elpy
-;; ;;   :ensure t
-;; ;;   :config
-;; ;;   (elpy-enable))
-
-;; ;; (use-package yasnippet
-;; ;;   :ensure t
-;; ;;   :t
-;; ;;   (yas-global-mode 1))
-
-;; ;; for conda use still `M-x pyvenv-activateRET path-to-conda-env`
-
-
-;; (use-package pyvenv
-;;   :ensure t
-;;   :hook (python-mode . pyvenv-mode)
-;;   :config
-;;   (setenv "WORKON_HOME" (expand-file-name "~/miniconda3/"))
-;;   (pyvenv-mode 1)
-;;   (setq pyvenv-activate (expand-file-name "~/miniconda3/bin/activate"))
-;;   ;; activate currently active conda env
-;;   (setq pyvenv-workon (getenv "CONDA_DEFAULT_ENV")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  ess for R
@@ -433,8 +392,11 @@
 ;; use org-mode instead!
 
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; copy-pasted from emacs-for-clojure customaizations/ui.el
+;; original source: https://launchpad.net/~cassou/+archive/ubuntu/emacs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; these settings are all just for some nicer optics
 
 ;; Don't show native OS scroll bars for buffers because they're redundant
 (when (fboundp 'scroll-bar-mode)
@@ -513,6 +475,14 @@
 
 
 
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; and the rest is automatically set by emacs - one should better not edit it by hand
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
