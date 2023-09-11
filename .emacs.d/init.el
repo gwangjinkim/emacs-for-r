@@ -277,6 +277,14 @@
   ;; (setq ess-use-auto-complete t)
 
   
+  ;;;;;;; How to connect to R which is in a conda environment:
+  ;; start shell in emacs by `M-x shell`
+  ;; (ssh into your cluster) and start R program
+  ;; e.g. conda activate myenv R --grid_mem=50g
+  ;; call then `M-x ess-remote` and follow the prompts to connect ESS to the
+  ;; remote process
+
+
   ;; tab completion in R script files
   ;; https://emacs.stackexchange.com/questions/14785/auto-complete-file-path-on-ess-r-mode
   ;; https://stat.ethz.ch/pipermail/ess-help/2013-March/008719.html
