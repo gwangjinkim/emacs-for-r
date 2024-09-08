@@ -206,13 +206,54 @@
 ;; conda
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  (defun joindirs (root &rest dirs)
+    "Joins a series of directories together,
+                 like Python's os.path.join
+                 (joindirs \"/a\" \"b\" \"c\") => /a/b/c"
+    (if (not dirs)
+        root
+      (apply 'joindirs
+             (expand-file-name (car dirs) root)
+             (cdr dirs))))
+
+  ;; add .bin/local to PATH variable the current
+  ;; this is because I start emacs with
+  ;; env HOME=$HOME/somefolder
+
+  (setenv "PATH" (concat (getenv "PATH") ":"
+                         (joindirs (getenv "ORIG_HOME") ".bin" "local")))
+
+  ;; get conda environment
+  (require 'json)
+
+  (defun get-conda-envs-dir ()
+    "Get the primary directory where Conda environments are stored."
+    (let* ((output (process-lines "conda" "info" "--json"))
+           (json-object-type 'hash-table)
+           (json-array-type 'list)
+           (json-key-type 'string)
+           (info (json-read-from-string (mapconcat 'identity output "\n")))
+           (envs-dirs (gethash "envs_dirs" info)))
+      (if envs-dirs
+          (car envs-dirs)
+        (error "Could not determine Conda environments directory"))))
+
+  ;; set conda env as workon
+  (defun set-conda-envs-dir-as-workon ()
+    "Set the Conda environments directory as the WORKON environment variable."
+    (let ((conda-envs-dir (get-conda-envs-dir)))
+      (setenv "WORKON_HOME" conda-envs-dir)
+      (message "WORKON_HOME set to %s" conda-envs-dir)))
+
+(get-conda-envs-dir)
 (use-package conda
   :ensure t
   :config
   ;; set the conda's home
-  (setq conda-anaconda-home (concat (getenv "CONDA_PREFIX_1") "/"))
-  (setq conda-env-home (concat (getenv "CONDA_PREFIX_1") "/"))
-  (setq conda-env-home-directory (concat (getenv "CONDA_PREFIX_1") "/"))
+  (let ((conda-env-path (concat (get-conda-envs-dir) "/")))
+    (setq conda-anaconda-home conda-env-path)
+    (setq conda-env-home conda-env-path)
+    (setq conda-env-home-directory conda-env-path))
   ;; it is important to not to use `expand-file-name` here
   ;; but rather use absolute environment variables
   ;; creates otherwise a lot of headache
@@ -373,7 +414,7 @@
 ;; | toggle display image in buffer              | C-c C-x C-i          |
 
 
-;; | inser table                                 | C-c C-s t nrow ncol  |
+;; | insert table                                | C-c C-s t nrow ncol  |
 ;; | cursor next cell                            | <TAB> or Shift-TAB   |
 
 ;; in gfm-mode
@@ -415,8 +456,8 @@
 ;; for a great explanation of emacs color themes.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
 ;; for a more technical explanation.
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(add-to-list 'load-path "~/.emacs.d/themes")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(add-to-list 'load-path "~/.emacs.d/themes/")
 (load-theme 'tomorrow-night-bright t)
 
 ;; increase font size for better readability
@@ -429,13 +470,21 @@
   (scroll-bar-mode -1))
 
 ;; Color Themes
-;; Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
-;; for a great explanation of emacs color themes.
-;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
-;; for a more technical explanation.
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(add-to-list 'load-path "~/.emacs.d/themes")
-(load-theme 'tomorrow-night-bright t)
+;; ;; Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
+;; ;; for a great explanation of emacs color themes.
+;; ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
+;; ;; for a more technical explanation.
+;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+;; (add-to-list 'load-path "~/.emacs.d/themes/")
+;; (load-theme 'tomorrow-night-bright t)
+
+;; nicer theme
+  (use-package sweet-theme
+    :ensure t
+    :init
+    (load-theme 'sweet t))
+
+
 
 ;; increase font size for better readability
 (set-face-attribute 'default nil :height 140)
@@ -483,7 +532,8 @@
 
 
 
-
+;; set ORIG_HOME back
+(setenv "HOME" (getenv "ORIG_HOME"))
 
 
 
